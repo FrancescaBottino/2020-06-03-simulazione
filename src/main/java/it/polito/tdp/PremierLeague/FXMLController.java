@@ -75,6 +75,24 @@ public class FXMLController {
 
     @FXML
     void doDreamTeam(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	
+    	Integer numero;
+    	
+    	try {
+    		numero = Integer.parseInt(txtK.getText());
+    		
+    	}catch(NumberFormatException e) {
+    		
+    		txtResult.appendText("Devi inserire un numero decimale");
+    		return;
+    	}	
+    	
+    	txtResult.appendText("Calcolo ricorsione..\n");
+    	
+    	model.doRicorsione(numero);
+    	
 
     }
 

@@ -19,8 +19,8 @@ public class Model {
 	private PremierLeagueDAO dao;
 	private Graph<Player, DefaultWeightedEdge> grafo;
 	private Map<Integer, Player> idMap;
-	
-	
+	private List<Player> soluzioneMigliore;
+	private double gradoTitolarieta;
 	
 	public Model() {
 		
@@ -132,6 +132,114 @@ public class Model {
 		
 	
 		
+	}
+
+
+	public List<Player> doRicorsione(Integer numero) {
+		
+		soluzioneMigliore = null;
+		
+		gradoTitolarieta = 0.0;
+		
+		List<Player> parziale = new ArrayList<>();
+		
+		List<Player> partenza = new ArrayList<>(grafo.vertexSet());
+		
+		cerca(parziale, partenza, numero);
+		
+		return soluzioneMigliore;
+		
+		
+		
+	}
+
+
+	private void cerca(List<Player> parziale, List<Player> partenza, Integer k) {
+		
+		
+		//caso terminale 
+		
+		double gradoParziale = calcolaGrado(parziale);
+		
+		if(parziale.size() == k) {
+			
+			//controllo gradoTitolarietà
+			
+			if(gradoParziale > gradoTitolarieta) {
+				
+				soluzioneMigliore = new ArrayList<>(parziale);
+				gradoTitolarieta = gradoParziale;
+				
+			}
+			
+			return;
+		}
+		
+		
+		//generazione sotto problemi : 
+		/*Quando un giocatore entra a far parte del dream-team, tutti i giocatori che quest’ultimo ha “battuto”, in
+			termini di minuti giocati, durante la stagione non possono più essere aggiunti alla squadra.
+		 * 
+		 */
+		
+		for(Player p : partenza) {
+			
+			if(!parziale.contains(p)) {
+				
+				parziale.add(p);
+				
+				//i "battuti" di p non possono più essere considerati
+				  
+				List<Player> remainingPlayers = new ArrayList<>(partenza);
+				
+				remainingPlayers.removeAll(Graphs.successorListOf(grafo, p));
+				
+				cerca(parziale, remainingPlayers, k);
+				
+				parziale.remove(p);
+				
+			}
+		}
+		
+		
+		
+		
+		
+		
+	}
+
+
+	private double calcolaGrado(List<Player> parziale) {
+		
+		//calcolo il grado di titolarietà di una soluzione 
+		
+		/*Il grado di titolarità di ogni singolo giocatore, in particolare, è dato dalla differenza
+		 * del peso dei suoi archi uscenti (i minuti che ha giocato in più dei suoi avversari) con
+		 * il peso degli archi entranti (i minuti che ha giocato in meno).
+		 * 
+		 */
+		double uscenti = 0.0;
+		double entranti = 0.0;
+		double differenza = 0.0;
+		
+		for(Player p : parziale) {
+			
+			for(DefaultWeightedEdge edge : grafo.outgoingEdgesOf(p)) {
+				
+				uscenti += grafo.getEdgeWeight(edge);
+			}
+			
+			for(DefaultWeightedEdge edge2: grafo.incomingEdgesOf(p)) {
+				
+				entranti += grafo.getEdgeWeight(edge2);
+			}
+			
+		}
+		
+		differenza = uscenti - entranti ;
+		
+		
+		return differenza;
 	}
 
 }
