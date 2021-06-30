@@ -241,5 +241,12 @@ public class Model {
 		
 		return differenza;
 	}
+	
+	
+	public double getGradoTot() {
+		
+		return gradoTitolarieta;
+		
+	}
 
 }

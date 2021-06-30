@@ -5,10 +5,12 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Avversario;
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Player;
 import it.polito.tdp.PremierLeague.model.TopPlayer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -91,7 +93,16 @@ public class FXMLController {
     	
     	txtResult.appendText("Calcolo ricorsione..\n");
     	
-    	model.doRicorsione(numero);
+    	List<Player> percorso =model.doRicorsione(numero);
+    	
+    	for(Player p: percorso) {
+    		
+    		txtResult.appendText(p.getPlayerID()+ " | "+p.getName()+"\n");
+    		
+    	}
+    	
+    	txtResult.appendText("Grado max: "+model.getGradoTot());
+    	
     	
 
     }
